@@ -61,7 +61,7 @@ optimizer = optim.Adam(model.classifier.parameters(), lr=0.001) #Adam optimizer,
 
 
 #-------------TRAINING------------------
-num_epochs = 10  # You can change this
+num_epochs = 20  # You can change this
 
 for epoch in range(num_epochs):
     model.train()  # Set model to training mode
