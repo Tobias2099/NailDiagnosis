@@ -10,11 +10,10 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from "../context/AuthContext";
 import ProfileDropdown from './Profile';
-import { Stack } from "@mui/material";
 
 export default function Navbar() {
 
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, login } = useAuth();
   const router = useRouter();
 
   return (

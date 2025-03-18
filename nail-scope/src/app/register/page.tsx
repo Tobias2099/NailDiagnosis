@@ -20,6 +20,11 @@ export default function Register() {
   const handleSignUp = async () => {
     setError(null);
 
+    if (!username || !email || !password) {
+      setError('Missing required fields');
+      return;
+    }
+
     const requestBody = {
       username,
       email,
@@ -39,10 +44,18 @@ export default function Register() {
 
       if (response.ok) {
         alert("Registration successful! Please log in.");
-        login();
-        router.push('../')
+        login({
+          username: username,
+          email: email,
+          birthDate: null,
+          sex: null,
+          height: null,
+          weight: null,
+          medicalHistory: null
+        });
+        router.push('/profile')
       } else {
-        setError(data.message || "Registration failed");
+        setError(data.error || "Registration failed");
       }
     } catch (err) {
       setError("Something went wrong. Please try again later.");

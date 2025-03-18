@@ -157,6 +157,56 @@ def register_user():
       return jsonify({'message': 'User registered successfully'}), 201
    except Exception as e:
       return jsonify({'error': str(e)}), 500
+   
+@app.route('/api/login', methods=['POST'])
+def login():
+    db = None
+    cursor = None
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+
+        # Validate input
+        if not email or not password:
+            return jsonify({'error': 'Missing email or password'}), 400
+
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+
+        # Fetch user by email
+        cursor.execute('SELECT * FROM users WHERE email = %s', (email.lower(),))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        # Validate password
+        if not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+            return jsonify({'error': 'Invalid credentials'}), 401
+
+        # Remove sensitive data before returning user info
+        user_data = {
+            "id": user["id"],
+            "username": user["username"],
+            "email": user["email"],
+            "birthDate": user["date_of_birth"],
+            "sex": user["sex"],
+            "height": user["height"],
+            "weight": user["weight"],
+            "medicalHistory": user["medical_history"]
+        }
+
+        return jsonify({'message': 'Login successful', 'user': user_data}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if db:
+            db.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

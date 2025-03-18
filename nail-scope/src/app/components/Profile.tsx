@@ -1,9 +1,11 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation'
 import { Avatar, IconButton, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function ProfileDropdown() {
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -35,7 +37,7 @@ export default function ProfileDropdown() {
             sx: { width: '7.25%', mt: '0.75%', borderRadius: 0 }
           }
         }}>
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={() => router.push('/profile')}>Profile</MenuItem>
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>

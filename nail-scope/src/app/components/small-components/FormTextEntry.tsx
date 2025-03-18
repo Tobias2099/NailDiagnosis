@@ -4,12 +4,11 @@ import { Stack, Typography, TextField } from '@mui/material';
 interface FormTextEntry {
   label: string;
   placeholder?: string;
-  width?: string;
   type?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function FormTextEntry({label, width, type, placeholder, onChange} : FormTextEntry) {
+export default function FormTextEntry({label, type, placeholder, onChange} : FormTextEntry) {
   return (
     <Stack spacing={1}>
       <Typography>{label}</Typography>
