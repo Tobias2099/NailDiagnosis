@@ -5,14 +5,17 @@ import {Select, MenuItem, FormControl, SelectChangeEvent, InputLabel} from '@mui
 interface SelectItemsProps {
   itemList: string[];
   label: string;
+  value?: 'Male' | 'Female';
+  handleChange?: (event: SelectChangeEvent) => void;
 }
 
-export default function SelectItems({itemList, label} : SelectItemsProps) {
+export default function SelectItems({itemList, label, value, handleChange} : SelectItemsProps) {
 
-  const [value, setValue] = useState('');
+  const [item, setItem] = useState(value || '');
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setValue(event.target.value);
+  const makeChanges = (event: SelectChangeEvent) => {
+    setItem(event.target.value);  // Update local state first
+    if (handleChange) handleChange(event);  // Then call the parent handler if provided
   }
 
   return (
@@ -20,9 +23,9 @@ export default function SelectItems({itemList, label} : SelectItemsProps) {
       <FormControl sx={{width: '100%'}}>
         <InputLabel>{label}</InputLabel>
         <Select
-          value={value}
+          value={item}
           label={label}
-          onChange={handleChange}
+          onChange={makeChanges}
         >
           {itemList.map((item, index) => (
             <MenuItem value={item} key={index}>{item}</MenuItem>

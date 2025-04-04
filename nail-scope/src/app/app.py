@@ -5,32 +5,24 @@ import torchvision.transforms as transforms
 from PIL import Image
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from chat import chat
+from db import get_db_connection  # instead of defining it here
+from google_oauth import oauth_bp as google_oauth_bp
+from fb_oauth import facebook_oauth_bp
 
-import mysql.connector
-from dotenv import load_dotenv
-import os
 import bcrypt
 
-load_dotenv()
-
-#Database Information
-db_config = {
-   "host": os.getenv('MYSQL_HOST'),
-   "user": os.getenv('MYSQL_USER'),
-   "password": os.getenv('MYSQL_PASSWORD'),
-   "database": os.getenv('MYSQL_DATABASE')
-}
-
-def get_db_connection():
-   return mysql.connector.connect(**db_config)
-
 app = Flask(__name__)
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 CORS(app)  # Enable CORS
+
+app.register_blueprint(google_oauth_bp, url_prefix='/api/auth')
+app.register_blueprint(facebook_oauth_bp, url_prefix='/api/auth/facebook')
 
 #Home path
 @app.route('/')
 def home():
-   return "Flask MySQL Integration with .env Successful!"
+  return "Flask MySQL Integration with .env Successful!"
 
 
 # ✅ Fix MODEL_PATH to match the correct model
@@ -189,12 +181,12 @@ def login():
         user_data = {
             "id": user["id"],
             "username": user["username"],
-            "email": user["email"],
-            "birthDate": user["date_of_birth"],
-            "sex": user["sex"],
-            "height": user["height"],
-            "weight": user["weight"],
-            "medicalHistory": user["medical_history"]
+            "email": user.get("email"),
+            "birthDate": user.get("date_of_birth"),
+            "sex": user.get("sex"),
+            "height": user.get("height"),
+            "weight": user.get("weight"),
+            "medicalHistory": user.get("medical_history")
         }
 
         return jsonify({'message': 'Login successful', 'user': user_data}), 200
@@ -208,5 +200,48 @@ def login():
         if db:
             db.close()
 
+@app.route('/api/save_profile', methods=['POST'])
+def save_profile():
+  try:
+    data = request.json
+
+    username = data.get('username')
+    email = data.get('email')
+    birthDate = data.get('birthDate')
+    sex = data.get('sex')
+    height = data.get('height')
+    weight = data.get('weight')
+    medicalHistory = data.get('medicalHistory')
+
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    query = """
+    UPDATE users
+    SET
+      date_of_birth = %s,
+      sex = %s,
+      height = %s,
+      weight = %s,
+      medical_history = %s
+    WHERE email = %s AND username = %s
+    """
+
+    cursor.execute(query, (birthDate, sex, height, weight, medicalHistory, email.lower(), username))
+    
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({'message': 'Profile saved successfully!'}), 200
+  except Exception as e:
+     return jsonify({'error': str(e)})
+  
+
+@app.route('/api/chat', methods=['POST'])
+def chat_route():
+  return chat()
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+

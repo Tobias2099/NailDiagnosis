@@ -13,11 +13,11 @@ import ProfileDropdown from './Profile';
 
 export default function Navbar() {
 
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn } = useAuth();
   const router = useRouter();
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{  flexGrow: 1, zIndex: 2000, position: 'relative' }}>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -29,7 +29,7 @@ export default function Navbar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textTransform: 'none' }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textTransform: 'none', fontSize: '150%' }} onClick={() => router.push('/')}>
             Anailytic
           </Typography>
 

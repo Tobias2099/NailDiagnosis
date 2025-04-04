@@ -1,8 +1,12 @@
 'use client';
 import * as React from "react";
 import Navbar from "./components/Navbar";
+import { Button } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "./context/AuthContext";
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import { ChatProvider} from './context/ChatContext';
+import ChatButton from './components/small-components/ChatButton';
 
 export default function RootLayout({
   children,
@@ -18,8 +22,11 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          {pathname !== "/login" && pathname !== "/register" && <Navbar />}
-          {children}
+          <ChatProvider>
+            {pathname !== "/login" && pathname !== "/register" && <Navbar />}
+            <ChatButton />
+            {children}
+          </ChatProvider>
         </AuthProvider>
       </body>
     </html>

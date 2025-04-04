@@ -9,6 +9,8 @@ import AnalyticsIcon from "@mui/icons-material/Analytics";
 import ClearIcon from "@mui/icons-material/Clear";
 import Report from "./components/Report";
 import {useAuth} from "./context/AuthContext";
+import Chat from './components/Chat';
+import { useChat, MessageType } from "./context/ChatContext";
 
 // Hidden File Input Styling
 const VisuallyHiddenInput = styled("input")({
@@ -24,7 +26,8 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function Home() {
-  const { isLoggedIn } = useAuth();
+  // const { isLoggedIn } = useAuth();
+  const { isChat, messageHistory, setMessageHistory } = useChat();
 
   const imageWidth = "50%";
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -82,6 +85,18 @@ export default function Home() {
       // alert(`Diagnosis: ${data.diagnosis}`); // ✅ Display diagnosis result
       setDiagnosis(data.diagnosis);
       setAccuracy(data.confidence);
+
+      const updatedMessages: MessageType[] = [
+        {
+          role: 'system',
+          content: `Diagnosis: ${data.diagnosis}, Diagnosis accuracy: ${data.confidence}`
+        },
+        ...(messageHistory || [])
+      ];
+
+      setMessageHistory(updatedMessages);
+      
+      
     } catch (error) {
       console.error("Error:", error);
       alert("Error processing the image");
@@ -90,7 +105,8 @@ export default function Home() {
 
   return (
     <>
-        <Stack sx={{ position: "absolute", top: 0, bottom: "20%", left: 0, right: 0, height: "99.5vh", zIndex: -1 }}>
+      <Stack direction="row" sx={{height: "99.5vh"}}>
+        <Stack sx={{ position: "absolute", top: 0, bottom: "20%", left: 0, right: 0 }}>
           <Box sx={{ mt: diagnosis? "9%" : "14%" }}>
           <Paper
             elevation={2}  // Slightly increases softness
@@ -111,7 +127,6 @@ export default function Home() {
           >
             {!imagePreview && <Typography variant="body1" color="gray">No image selected</Typography>}
           </Paper>
-
             <Stack direction="row" sx={{ margin: "auto", width: imageWidth, mt: '1.5%' }} spacing={2.5}>
               <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
                 Upload Image
@@ -155,6 +170,8 @@ export default function Home() {
             }
           </Box>
         </Stack>
+        {isChat && <Chat />}
+      </Stack>
     </>
   );
 }

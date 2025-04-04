@@ -6,13 +6,14 @@ interface FormTextEntry {
   placeholder?: string;
   type?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
 }
 
-export default function FormTextEntry({label, type, placeholder, onChange} : FormTextEntry) {
+export default function FormTextEntry({label, type, placeholder, onChange, value} : FormTextEntry) {
   return (
     <Stack spacing={1}>
       <Typography>{label}</Typography>
-      <TextField type={type} placeholder={placeholder} onChange={onChange}/>
+      <TextField type={type} placeholder={placeholder} onChange={onChange} value={value}/>
     </Stack>
   )
 }
